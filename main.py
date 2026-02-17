@@ -4,8 +4,17 @@ import requests
 import io
 import uvicorn
 import base64
+from fastapi.middleware.cors import CORSMiddleware  
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins (localhost, your production domain, etc.)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (POST, GET, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 def reconstruct_layout(elements):
     """
