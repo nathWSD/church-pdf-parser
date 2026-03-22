@@ -3,3 +3,4 @@ uvicorn
 pypdf
 requests
 python-multipart
+weasyprint
