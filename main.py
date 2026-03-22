@@ -5,6 +5,7 @@ import io
 import uvicorn
 import base64
 from fastapi.middleware.cors import CORSMiddleware  
+from weasyprint import HTML 
 
 app = FastAPI()
 
@@ -149,5 +150,23 @@ def parse_pdf(payload: dict = Body(...)):
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/generate-certificate")
+def generate_certificate_pdf(payload: dict = Body(...)):
+    html_content = payload.get("html")
+    if not html_content:
+        raise HTTPException(status_code=400, detail="No HTML content provided")
+    
+    try:
+        # Generate PDF bytes from HTML
+        pdf_bytes = HTML(string=html_content).write_pdf()
+        
+        # Convert to Base64 to safely send back via JSON
+        pdf_b64 = base64.b64encode(pdf_bytes).decode('utf-8')
+        
+        return {"pdf_base64": pdf_b64}
+    except Exception as e:
+        print(f"PDF Gen Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=10000)
